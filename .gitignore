@@ -1,6 +1,7 @@
 # 無視
 /data/*
 /result/*
+/log/*
 
 # 無視しない
 !/docker/
