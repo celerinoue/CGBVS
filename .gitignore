@@ -1,0 +1,9 @@
+# 無視
+/data/*
+/result/*
+
+# 無視しない
+!/docker/
+!/docs/
+!/script/
+!/setting/

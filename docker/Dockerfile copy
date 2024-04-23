@@ -1,0 +1,56 @@
+FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
+MAINTAINER sotainoue
+
+# lang
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+
+# Create user and set ownership and permissions as required*
+RUN adduser -D sotainoue
+USER sotainoue
+WORKDIR /home/sotainoue
+
+# Linux update & install custom module
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install -y sudo wget vim bzip2 curl git zsh npm screen
+
+# dir
+#RUN mkdir -p ~/usr/gcn
+#WORKDIR /opt
+#WORKDIR /usr
+ENV USER sotainoue
+ENV HOME /home/${USER}
+ENV CONDA_ROOT /home/${USER}/miniconda
+ENV PATH /home/${USER}/miniconda/bin:$PATH
+SHELL ["/bin/bash", "-c"]
+
+# install conda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py37_4.10.3-Linux-x86_64.sh  -O ~/miniconda.sh && \
+    bash ~/miniconda.sh -b -p $CONDA_ROOT && \
+    ln -s ${CONDA_ROOT}/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". ${CONDA_ROOT}/etc/profile.d/conda.sh" >> ~/.bashrc
+
+
+
+#RUN conda install python==3.7.10
+RUN conda install tensorflow-gpu==1.15.0
+RUN conda install scikit-learn joblib pandas keras matplotlib
+RUN conda install rdkit -c rdkit
+RUN apt -y install libfontconfig1 libxrender1
+RUN pip install --user mendeleev oddt
+
+
+
+# install kGCN
+RUN pip install --user --upgrade git+https://github.com/celerinoue/kGCN.git
+RUN git clone https://github.com/celerinoue/kGCN.git
+
+# zsh
+#RUN chsh -s $(which zsh)
+
+# prompt pure
+#RUN mkdir -p "$HOME/.zsh" && \
+#    git clone https://github.com/sindresorhus/pure.git "$HOME/.zsh/pure"
+#RUN fpath+=$HOME/.zsh/pure
+#RUN autoload -U promptinit; promptinit && \
+#    prompt pure
